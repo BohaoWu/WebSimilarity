@@ -8,12 +8,13 @@
 
 import webparser
 
+
 def calculate_web_similarity(web1:webparser.WebParser, web2:webparser.WebParser):
     coeff1 = 0.5
     coeff2 = 0.5
     text_similarity = coeff1 * calculate_web_similarity_by_text(web1, web2)
-    domtree_similarity = coeff2 * calculate_web_similarity_by_domtree(web1, web2)
-    return text_similarity + domtree_similarity
+    dom_tree_similarity = coeff2 * calculate_web_similarity_by_dom_tree(web1, web2)
+    return text_similarity + dom_tree_similarity
 
 
 def calculate_web_similarity_by_text(web1, web2):
@@ -22,6 +23,7 @@ def calculate_web_similarity_by_text(web1, web2):
     return 1
 
 
-def calculate_web_similarity_by_domtree(web1, web2):
-
+def calculate_web_similarity_by_dom_tree(web1, web2):
+    dom_tree1 = web1.get_dom_tree()
+    dom_tree2 = web2.get_dom_tree()
     return 1
