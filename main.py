@@ -2,34 +2,38 @@
 
 """
 @Author  :AkiyamaN
-@File    :webparser.py
+@File    :main.py
 @Time    :2020/3/24 14:08
 """
 
 import calrelevance
 import calsimilarity
+import webclassifier
 import webcrawler
+import website
 
 
 if __name__ == "__main__":
-    seed_web = "url"
-    crawler = webcrawler.Crawler()
-    crawler.add_website(seed_web)
-    while(len(crawler.websites) > 0):
-        crawler.crawler()
+    seed_web = ['url']
+    crawlers = []
+    classifier = webclassifier.Classifier()
 
-        # According to relevance， decide website which we have to crawl next generation
-        thed1 = 0.5
-        for i in crawler.websites:
-            if calrelevance.calculate_relevance(i) < thed1:
-                crawler.websites.remove(i)
+    # Each seed website is used as root of crawler.
+    for url in seed_web:
+        crawler = webcrawler.Crawler()
+        crawler.set_root_website(website.Website(url, webcrawler.get_soup(url), './web_source' + url, True, 1))
+        crawlers.append(crawler)
 
-        thed2 = 0.5
-        # According to similarity, decide websites which may have same topic with seed website
-        for i in  crawler.websites:
-            if calsimilarity.calculate_web_similarity(i, seed_web) < thed2:
-                crawler.websites.remove(i)
-
+    # Do the crawler!
+    count = len(crawlers)
+    while count > 0:
+        count = 0
+        for crawler in crawlers:
+            crawler.crawler()
+            count = count + len(crawler.website_nodes)
     print("Web crawler finshed.")
+
+    # Save similar doc
+
 
 
