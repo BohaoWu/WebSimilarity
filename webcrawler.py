@@ -37,9 +37,11 @@ class Crawler:
         if len(self.website_nodes) == 0:
             print("There are no more websites need to be crawled.")
             return False
+
         new_website_nodes = []
         for website_node in self.websiteNodes:
             for url in website_node.website.soup.find_all('a'):
+                # Decide which website can be stored
                 new_website_node = WebsiteNode(Website(url, get_soup(url), relevance=1))
                 if new_website_node.website.relevance > self.threshold:
                     website_node.child.append(new_website_node)
