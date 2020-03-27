@@ -6,8 +6,6 @@
 @Time    :2020/3/24 14:08
 """
 
-import calrelevance
-import calsimilarity
 import webclassifier
 import webcrawler
 import website
@@ -29,8 +27,9 @@ if __name__ == "__main__":
     while count > 0:
         count = 0
         for crawler in crawlers:
-            crawler.crawler()
+            crawler.crawler(classifier)
             count = count + len(crawler.website_nodes)
+
     print("Web crawler finshed.")
 
     # Save similar doc
