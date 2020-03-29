@@ -36,8 +36,8 @@ class Classifier:
         self.tfidf = []
 
         # Load glove
-        word2vec_output_file = 'glove.6B.50d.word2vec.txt'
-        glove_input_file = 'glove.6B.50d.txt'
+        word2vec_output_file = 'glove.6B.300d.word2vec.txt'
+        glove_input_file = 'glove.6B.300d.txt'
         (self.count, self.dimension) = glove2word2vec(glove_input_file, word2vec_output_file)
         print("Glove model has been loaded, count is %s, dimension is %s." % (self.count, self.dimension))
         # Load model
@@ -78,11 +78,15 @@ class Classifier:
         # Calculate DocVec and return it.
         doc_vec1 = np.array([0 for i in range(self.dimension)])
         doc_vec2 = np.array([0 for i in range(self.dimension)])
+        # Choose the top words of tf-idf
+        top_word = 10
         for i in range(len(self.words)):
             if self.words[i] in self.glove_model.index2word:
-                doc_vec1 = doc_vec1 + tfidf1[i] * self.glove_model[self.words[i]]
-                doc_vec2 = doc_vec2 + tfidf2[i] * self.glove_model[self.words[i]]
-        return self.euclidean_distance(doc_vec1, doc_vec2)
+                if tfidf1[i] > sorted(tfidf1)[-top_word]:
+                    doc_vec1 = doc_vec1 + tfidf1[i] * self.glove_model[self.words[i]]
+                if tfidf2[i] > sorted(tfidf2)[-top_word]:
+                    doc_vec2 = doc_vec2 + tfidf2[i] * self.glove_model[self.words[i]]
+        return self.pearson(doc_vec1, doc_vec2)
 
     def calculate_web_similarity_by_dom_tree(self, web1: Website, web2: Website):
         dom_tree1 = web1.get_dom_tree()
@@ -114,6 +118,28 @@ class Classifier:
         for a, b in zip(x, y):
             d += (a-b) ** 2
         return d**0.5
+
+    def pearson(self, x, y):
+        sum_XY = 0.0
+        sum_X = 0.0
+        sum_Y = 0.0
+        normX = 0.0
+        normY = 0.0
+        count = 0
+        for a, b in zip(x, y):
+            count += 1
+            sum_XY += a * b
+            sum_X += a
+            sum_Y += b
+            normX += a ** 2
+            normY += b ** 2
+        if count == 0:
+            return 0
+        # denominator part
+        denominator = (normX - sum_X ** 2 / count) ** 0.5 * (normY - sum_Y ** 2 / count) ** 0.5
+        if denominator == 0:
+            return 0
+        return (sum_XY - (sum_X * sum_Y) / count) / denominator
 
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ if __name__ == "__main__":
     print('Crawlers have been built.')
 
     # Do the crawler!
-    round_count = 0
+    round_count = 1
     count = len(crawlers)
     while count > 0:
         count = 0
@@ -42,8 +42,12 @@ if __name__ == "__main__":
             count = count + len(crawler.website_nodes)
         round_count += 1
         print('This the %s round of crawler.' % (round_count))
-
     print("Web crawler finshed.")
+
+    with open('corpus.txt', 'a') as f:
+        for i in classifier.corpus:
+            f.write(i)
+    print("Corpus has been saved.")
 
     # Save similar doc
 
